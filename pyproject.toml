@@ -7,31 +7,36 @@ name = "cichecker"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "richmr", email = "richmr@users.noreply.github.com" },
+  { name = "Michael Rich", email = "richmr2174@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "click",
+  "fastapi>=0.104.1",
+  "typer==0.9.0",
+  "uvicorn[standard]>=0.24.0",
+  "rich>=13.7.0",
+  "tomlkit>=0.12.3",
+  "importlib_resources>=6.1.1",
+  "requests>=2.31.0",
+  "pytest>=7.4.3",
+  "beautifulsoup4>=4.12.2",
+  "pydantic"
 ]
 
 [project.urls]
-Documentation = "https://github.com/unknown/cichecker#readme"
-Issues = "https://github.com/unknown/cichecker/issues"
-Source = "https://github.com/unknown/cichecker"
+Documentation = "https://github.com/richmr/cichecker#readme"
+Issues = "https://github.com/richmr/cichecker/issues"
+Source = "https://github.com/richmr/cichecker"
 
 [project.scripts]
 cichecker = "cichecker.cli:cichecker"
@@ -57,7 +62,7 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+python = ["3.10", "3.11"]
 
 [tool.hatch.envs.lint]
 detached = true
