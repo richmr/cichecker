@@ -37,9 +37,9 @@ def connectTest(
         allowable_protocols = ["TCP", "UDP"]
         match protocol:
             case "TCP":
-                protocol = socket.SOCK_STREAM
+                protocol_raw = socket.SOCK_STREAM
             case "UDP":
-                protocol = socket.SOCK_DGRAM
+                protocol_raw = socket.SOCK_DGRAM
             case _:
                 raise ValueError(f"Please specify protocol of {','.join(allowable_protocols)} only")
         
@@ -47,39 +47,39 @@ def connectTest(
         timeout = float(timeout)
 
         # attempt connection
-        sock = socket.socket(socket.AF_INET, protocol)
+        sock = socket.socket(socket.AF_INET, protocol_raw)
         sock.settimeout(timeout)
         result = sock.connect((dest_host, dest_port))
 
         # if we get here, the connection was made
         if not check_block_instead:
             response.return_code = NCPAPluginReturnCodes.OK
-            response.message = f"OK: Able to connect to {dest_host}:{dest_port} via {protocol}"
+            response.message = f"Able to connect to {dest_host} port {dest_port} via {protocol}"
         else:
-            response.return_code = NCPAPluginReturnCodes.Critical
-            response.message = f"CRITICAL: Was able to connect to {dest_host}:{dest_port} via {protocol} but this connection should be blocked"
+            response.return_code = NCPAPluginReturnCodes.CRITICAL
+            response.message = f"Was able to connect to {dest_host} port {dest_port} via {protocol} but this connection should be blocked"
 
     except TimeoutError:
         # Per documentation this should be a closed port
         if not check_block_instead:
-            response.return_code = NCPAPluginReturnCodes.Critical
-            response.message = f"CRITICAL: Not able to connect to {dest_host}:{dest_port} via {protocol}"
+            response.return_code = NCPAPluginReturnCodes.CRITICAL
+            response.message = f"Not able to connect to {dest_host} port {dest_port} via {protocol}"
         else:
             response.return_code = NCPAPluginReturnCodes.OK
-            response.message = f"OK: Connection {dest_host}:{dest_port} via {protocol} blocked as planned"
+            response.message = f"Connection {dest_host} port {dest_port} via {protocol} blocked as planned"
 
     except ConnectionRefusedError:
         if not check_block_instead:
-            response.return_code = NCPAPluginReturnCodes.Critical
-            response.message = f"CRITICAL: Not able to connect to {dest_host}:{dest_port} via {protocol}"
+            response.return_code = NCPAPluginReturnCodes.CRITICAL
+            response.message = f"Not able to connect to {dest_host} port {dest_port} via {protocol}"
         else:
             response.return_code = NCPAPluginReturnCodes.OK
-            response.message = f"OK: Connection {dest_host}:{dest_port} via {protocol} blocked as planned" 
+            response.message = f"Connection {dest_host} port {dest_port} via {protocol} blocked as planned" 
 
     except Exception as badnews:
         logger.debug("Check failed to run", exc_info=1)
-        response.return_code = NCPAPluginReturnCodes.Unknown
-        response.message = f"Unable to check connection to {dest_host}:{dest_port} via {protocol} because {badnews}"
+        response.return_code = NCPAPluginReturnCodes.UNKNOWN
+        response.message = f"Unable to check connection to {dest_host} port {dest_port} via {protocol} because {badnews}"
 
     return response
 
