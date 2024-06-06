@@ -1,6 +1,11 @@
 import socket
+import time
 
-from cichecker.messages import CheckResponse, NCPAPluginReturnCodes
+from cichecker.messages import (
+    CheckResponse, 
+    NCPAPluginReturnCodes,
+    PerformanceData
+)
 from cichecker.cilogger import logger
 
 def connectTest(
@@ -47,14 +52,23 @@ def connectTest(
         timeout = float(timeout)
 
         # attempt connection
+        start = time.time()
         sock = socket.socket(socket.AF_INET, protocol_raw)
         sock.settimeout(timeout)
         result = sock.connect((dest_host, dest_port))
-
+        end = time.time()
+        
         # if we get here, the connection was made
         if not check_block_instead:
             response.return_code = NCPAPluginReturnCodes.OK
             response.message = f"Able to connect to {dest_host} port {dest_port} via {protocol}"
+            response.performance_data.append(
+                PerformanceData(
+                    label="connectTime",
+                    value=round((end-start)*1000, 1),
+                    unit_of_measure="ms"                              
+                )
+            )
         else:
             response.return_code = NCPAPluginReturnCodes.CRITICAL
             response.message = f"Was able to connect to {dest_host} port {dest_port} via {protocol} but this connection should be blocked"

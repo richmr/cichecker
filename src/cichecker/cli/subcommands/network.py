@@ -23,7 +23,10 @@ def connect(
     """
     Check to make sure the host can connect to the provided endpoint
     """
-    print(network.connectTest(dest_host, dest_port, protocol, timeout).toNCPAMessage())
+    result = network.connectTest(dest_host, dest_port, protocol, timeout)
+    print(result.toNCPAMessage())
+    return result.return_code.value
+
 
 @app.command()
 def block(
@@ -35,7 +38,9 @@ def block(
     """
     Check to make sure the host CANNOT connect to the provided endpoint
     """
-    print(network.blockTest(dest_host, dest_port, protocol, timeout).toNCPAMessage())
+    result = network.blockTest(dest_host, dest_port, protocol, timeout)
+    print(result.toNCPAMessage())
+    return result.return_code.value
 
 if __name__ == "__main__":
     app()

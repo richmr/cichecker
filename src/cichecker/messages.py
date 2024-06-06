@@ -68,7 +68,7 @@ class CheckResponse(BaseModel):
     return_code:NCPAPluginReturnCodes = Field(description="The return code for this check", default=NCPAPluginReturnCodes.OK)
     message:str = Field(description="The detailed response message for this check", default="N/A")
     verbose:str = Field(default=None, description="Verbose response data if provided")
-    performance_data:List[PerformanceData] = Field(description="Any performance data derived from this check", default=None)
+    performance_data:List[PerformanceData] = Field(description="Any performance data derived from this check", default=[])
 
 
     def toNCPAMessage(self):
@@ -77,7 +77,7 @@ class CheckResponse(BaseModel):
         Found here: https://nagios-plugins.org/doc/guidelines.html#AEN33
         """
         output = f"{self.return_code.name}: {self.message}"
-        if self.performance_data is not None:
+        if len(self.performance_data) > 0:
             output += "|"
             perfdata_text = [p.toNCPAString() for p in self.performance_data]
             output += ",".join(perfdata_text)
