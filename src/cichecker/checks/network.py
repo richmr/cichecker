@@ -91,7 +91,7 @@ def connectTest(
             response.message = f"Connection {dest_host} port {dest_port} via {protocol} blocked as planned" 
 
     except Exception as badnews:
-        logger.debug("Check failed to run", exc_info=1)
+        logger.error("Check failed to run", exc_info=1)
         response.return_code = NCPAPluginReturnCodes.UNKNOWN
         response.message = f"Unable to check connection to {dest_host} port {dest_port} via {protocol} because {badnews}"
 

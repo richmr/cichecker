@@ -1,6 +1,7 @@
 import typer
 from typer import Argument, Option
 from typing_extensions import Annotated
+import sys
 
 from cichecker.checks import network
 
@@ -25,7 +26,8 @@ def connect(
     """
     result = network.connectTest(dest_host, dest_port, protocol, timeout)
     print(result.toNCPAMessage())
-    return result.return_code.value
+    #return result.return_code.value
+    sys.exit(result.return_code.value)
 
 
 @app.command()
@@ -40,7 +42,7 @@ def block(
     """
     result = network.blockTest(dest_host, dest_port, protocol, timeout)
     print(result.toNCPAMessage())
-    return result.return_code.value
+    sys.exit(result.return_code.value)
 
 if __name__ == "__main__":
     app()
