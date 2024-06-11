@@ -2,20 +2,10 @@ import typer
 from typer import Argument, Option
 from typing_extensions import Annotated
 import sys
-# import enum
 
 from cichecker.checks import registry
 
 app = typer.Typer()
-
-# def hiveCallback(hive:str):
-#     allowed_hives = registry.getAcceptableHives().keys()
-#     if hive not in allowed_hives:
-#          raise typer.BadParameter(f"Please specify hive of {','.join(allowed_hives)} only")
-#     return hive
-
-# hive_choice_dict = dict(zip(registry.getAcceptableHives().keys(), registry.getAcceptableHives().keys()))
-# available_hives_Enum = enum.Enum("DynamicEnum", hive_choice_dict)
 
 @app.command()
 def check(
@@ -32,7 +22,7 @@ def check(
 
 @app.command()
 def retrieve(
-    full_registry_key:Annotated[str, Argument(help="A full registry key string from hive to value.  For example: HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run")],
+    full_registry_key:Annotated[str, Argument(help="A full registry key string from hive to value.  For example: HKEY_CURRENT_USER\Environment\Path")],
 ):
      """
      Prints the desired key value as seen by this tool
@@ -41,10 +31,4 @@ def retrieve(
      print(result.toNCPAMessage())
      sys.exit(result.return_code.value)
 
-# @app.command()
-# def retrieve_full(
-#     full_key:str
-# ):
-#     result = registry.registryValueCheck2(full_key, expected_value=None, retrieve_only=True)
-#     print(result.toNCPAMessage())
-#     sys.exit(result.return_code.value)
+
