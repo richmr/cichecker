@@ -6,7 +6,7 @@ from cichecker.messages import (
 )
 
 from cichecker.cilogger import logger
-logger.setLevel("DEBUG")
+# logger.setLevel("DEBUG")
 
 class RegistryKeyParseError(Exception):
     pass
