@@ -30,7 +30,8 @@ dependencies = [
   "requests>=2.31.0",
   "pytest>=7.4.3",
   "beautifulsoup4>=4.12.2",
-  "pydantic"
+  "pydantic",
+  "pyinstaller"
 ]
 
 [project.urls]

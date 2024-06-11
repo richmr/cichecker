@@ -1,4 +1,5 @@
 import winreg
+import hashlib
 
 from cichecker.messages import (
     CheckResponse, 
@@ -31,7 +32,8 @@ def getAcceptableHives() -> dict:
     return hives
 
 def getRegistryValue2(
-        full_registry_key:str
+        full_registry_key:str,
+        generate_hash:bool = False
 ):
     """
     Returns a stringified version of the registry key value suitable to print.  Checks to make sure the provided key actually maps to a value.
@@ -40,11 +42,13 @@ def getRegistryValue2(
     ----------
     full_key:str
         A full registry key string from hive to value.  For example: HKEY_CURRENT_USER\Environment\Path
+    generate_hash:bool
+        Set to True to generate a hash for the data in the key, and not the value.  Useful for values that may have spaces in them which complicates using them as arguments
 
     Returns
     -------
     str
-        Print-suitable value of the key
+        Print-suitable value of the key (or hash)
     """
     full_key_list = full_registry_key.split("\\")
     hive = full_key_list.pop(0)
@@ -71,15 +75,23 @@ def getRegistryValue2(
         (found_value, value_type) = winreg.QueryValueEx(key_handle, subkey)
         # This here to allow special handling of types as needed
         # Currently just attempts to "stringify" everything
+        value = None
         match value_type:
             case _:
-                return str(found_value)
+                value = str(found_value)
+
+        # Now check for hash
+        if generate_hash:
+            value = hashlib.sha1(value.encode()).hexdigest()
+        
+        return value
 
 
 def registryValueCheck2(
     full_key:str,
     expected_value:str,
-    retrieve_only:bool = False    
+    retrieve_only:bool = False,
+    generate_hash:bool = False    
 ) -> CheckResponse:
     """
     Will check the given registry hive for a proper subkey value
@@ -92,6 +104,9 @@ def registryValueCheck2(
         The expected value for this key
     retrieve_only:bool
         Simply returns the value instead of checking it.  Used to establish what the baseline should be.
+    generate_hash:bool
+        Set to True to generate a hash for the data in the key, and not the value.  Useful for values that may have spaces in them which complicates using them as arguments
+
 
     Returns
     -------
@@ -101,17 +116,26 @@ def registryValueCheck2(
     response = CheckResponse(name="Registry key check")
    
     try:
-        found_value = getRegistryValue2(full_key)
+        found_value = getRegistryValue2(full_key, generate_hash=generate_hash)
         if retrieve_only:
             response.return_code = NCPAPluginReturnCodes.OK
-            response.message = f"Value of this key is: {found_value}"
+            if generate_hash:
+                response.message = f"Hashed value of this key is: {found_value}"
+            else:
+                response.message = f"Value of this key is: {found_value}"
         else:
             if found_value == expected_value:
                 response.return_code = NCPAPluginReturnCodes.OK
-                response.message = f"The registry key value was correct"
+                if generate_hash:
+                    response.message = f"The registry hash value was correct"
+                else:
+                    response.message = f"The registry key value was correct"
             else:
                 response.return_code = NCPAPluginReturnCodes.CRITICAL
-                response.message = f"The returned registry value {found_value} did not match {expected_value}"
+                if generate_hash:
+                    response.message = f"The returned registry hash value {found_value} did not match {expected_value}"
+                else:
+                    response.message = f"The returned registry value {found_value} did not match {expected_value}"
     except RegistryKeyParseError as regbadnews:
         response.return_code = NCPAPluginReturnCodes.UNKNOWN
         response.message = f"{regbadnews}"
