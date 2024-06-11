@@ -9,7 +9,7 @@ app = typer.Typer()
 
 @app.command()
 def check(
-    full_registry_key:Annotated[str, Argument(help="A full registry key string from hive to value.  For example: HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run")],
+    full_registry_key:Annotated[str, Argument(help="A full registry key string from hive to value.  For example: HKEY_CURRENT_USER\Environment\Path")],
     expected_value:Annotated[str, Argument(help="The expected value for this key")]
 ):
      """
