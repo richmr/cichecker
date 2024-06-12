@@ -11,7 +11,7 @@ from cichecker.cli.subcommands import (
 )
 from cichecker.cilogger import logger
 
-ci_app = typer.Typer()
+ci_app = typer.Typer(help=f"Version: {__version__}")
 
 ci_app.add_typer(network.app, name="network", help="Commands to test network connectivity", no_args_is_help=True)
 ci_app.add_typer(file_checks.app, name="file", help="Commands to test critical files", no_args_is_help=True)
