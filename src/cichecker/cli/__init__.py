@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 import typer
+import sys
 
 from cichecker.__about__ import __version__
 from cichecker.cli.subcommands import (
@@ -9,7 +10,6 @@ from cichecker.cli.subcommands import (
     network
 )
 from cichecker.cilogger import logger
-
 
 ci_app = typer.Typer()
 
@@ -26,6 +26,14 @@ except ModuleNotFoundError:
 except Exception as badnews:
     logger.error(f"Unable to load registry_checks because {badnews}", exc_info=True)
     pass
+
+@ci_app.command()
+def health_check():
+    """
+    Simply returns OK for a simple health check on the plugin
+    """
+    print("OK: The cichecker plugin is responding")
+    sys.exit(0)
 
 def cichecker():
     ci_app()
