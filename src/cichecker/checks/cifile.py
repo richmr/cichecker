@@ -4,7 +4,8 @@ import hashlib
 from cichecker.messages import (
     CheckResponse, 
     NCPAPluginReturnCodes,
-    PerformanceData
+    PerformanceData,
+    truthiness
 )
 from cichecker.cilogger import logger
 
@@ -34,9 +35,11 @@ def existTest(
         if p.exists():
             response.return_code = NCPAPluginReturnCodes.OK
             response.message = f"{p} does exist"
+            response.performance_data.append(truthiness(True))
         else:
             response.return_code = NCPAPluginReturnCodes.CRITICAL
             response.message = f"{p} does not exist"
+            response.performance_data.append(truthiness(False))
     except Exception as badnews:
         logger.error("Check failed to run", exc_info=1)
         response.return_code = NCPAPluginReturnCodes.UNKNOWN
@@ -118,9 +121,11 @@ def integrityTest(
             if actual_hash == expected_hash:
                 response.return_code = NCPAPluginReturnCodes.OK
                 response.message = f"SHA1 hash of {target} matches"
+                response.performance_data.append(truthiness(True))
             else:
                 response.return_code = NCPAPluginReturnCodes.CRITICAL
                 response.message = f"SHA1 has mismatch.  {target} has changed"
+                response.performance_data.append(truthiness(False))
     except Exception as badnews:
         logger.error("Check failed to run", exc_info=1)
         response.return_code = NCPAPluginReturnCodes.UNKNOWN

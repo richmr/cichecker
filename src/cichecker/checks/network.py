@@ -4,7 +4,8 @@ import time
 from cichecker.messages import (
     CheckResponse, 
     NCPAPluginReturnCodes,
-    PerformanceData
+    PerformanceData,
+    truthiness
 )
 from cichecker.cilogger import logger
 
@@ -72,23 +73,28 @@ def connectTest(
         else:
             response.return_code = NCPAPluginReturnCodes.CRITICAL
             response.message = f"Was able to connect to {dest_host} port {dest_port} via {protocol} but this connection should be blocked"
+            response.performance_data.append(truthiness(False))
 
     except TimeoutError:
         # Per documentation this should be a closed port
         if not check_block_instead:
             response.return_code = NCPAPluginReturnCodes.CRITICAL
             response.message = f"Not able to connect to {dest_host} port {dest_port} via {protocol}"
+            response.performance_data.append(truthiness(False))
         else:
             response.return_code = NCPAPluginReturnCodes.OK
             response.message = f"Connection {dest_host} port {dest_port} via {protocol} blocked as planned"
+            response.performance_data.append(truthiness(True))
 
     except ConnectionRefusedError:
         if not check_block_instead:
             response.return_code = NCPAPluginReturnCodes.CRITICAL
             response.message = f"Not able to connect to {dest_host} port {dest_port} via {protocol}"
+            response.performance_data.append(truthiness(False))
         else:
             response.return_code = NCPAPluginReturnCodes.OK
             response.message = f"Connection {dest_host} port {dest_port} via {protocol} blocked as planned" 
+            response.performance_data.append(truthiness(True))
 
     except Exception as badnews:
         logger.error("Check failed to run", exc_info=1)

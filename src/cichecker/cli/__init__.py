@@ -35,5 +35,13 @@ def health_check():
     print("OK: The cichecker plugin is responding")
     sys.exit(0)
 
+@ci_app.command()
+def version():
+    """
+    Returns version of cichecker that is running
+    """
+    print(f"OK: cichecker version is {__version__} | 'version'={__version__};")
+    sys.exit()
+
 def cichecker():
     ci_app()

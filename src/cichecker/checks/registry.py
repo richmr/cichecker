@@ -4,6 +4,7 @@ import hashlib
 from cichecker.messages import (
     CheckResponse, 
     NCPAPluginReturnCodes,
+    truthiness
 )
 
 from cichecker.cilogger import logger
@@ -128,14 +129,18 @@ def registryValueCheck2(
                 response.return_code = NCPAPluginReturnCodes.OK
                 if generate_hash:
                     response.message = f"The registry hash value was correct"
+                    response.performance_data.append(truthiness(True))
                 else:
                     response.message = f"The registry key value was correct"
+                    response.performance_data.append(truthiness(True))
             else:
                 response.return_code = NCPAPluginReturnCodes.CRITICAL
                 if generate_hash:
                     response.message = f"The returned registry hash value {found_value} did not match {expected_value}"
+                    response.performance_data.append(truthiness(False))
                 else:
                     response.message = f"The returned registry value {found_value} did not match {expected_value}"
+                    response.performance_data.append(truthiness(False))
     except RegistryKeyParseError as regbadnews:
         response.return_code = NCPAPluginReturnCodes.UNKNOWN
         response.message = f"{regbadnews}"

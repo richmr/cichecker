@@ -41,6 +41,21 @@ class PerformanceData(BaseModel):
 
         return toreturn
 
+def truthiness(value:bool) -> PerformanceData:
+    """
+    Convenience function to generate a PerformanceData object set to truthiness (True/False) value.
+    Intended to allow the plotting of yes/no checks in Nagios.
+
+    'tu' are truth units.  1 tu = fully true/pass/yes.  0 tu = fully false/fail/no
+    """
+    value = bool(value)
+    toreturn = PerformanceData(
+        label="truth",
+        value=float(value),
+        unit_of_measure="tu"
+    )
+    return toreturn
+
 def datetime_utc():
     # Adapter to allow for a default timestamp
     return datetime.datetime.now(datetime.UTC)
